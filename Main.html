@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serene Chat AI Buddy</title>
+    <style>
+        /* General Styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #2D2E32;
+            color: #DADADA;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+        background-color: #4B3B73; /* Optional: Header background color */
+        padding: 1rem;
+        text-align: center;
+        color: white;
+        font-size: 1rem;
+    }
+
+        #stats {
+            padding: 20px;
+            text-align: center;
+            background-color: #393B44;
+            color: #F3E8FF;
+            border-radius: 8px;
+            margin: 20px;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 0.5em;
+        }
+
+        h2 {
+            font-size: 1.5em;
+            color: #C8A2C8;
+        }
+
+        /* Chatbot Icon Styling */
+        #chatbot-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 200px;
+            padding: 10px;
+            background-color: #4B3B73;
+            color: #F3E8FF;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Chatbot Window Styling */
+        #chatbot {
+            display: none;
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 300px;
+            padding: 10px;
+            background-color: #393B44;
+            border: 1px solid #4B3B73;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+            border-radius: 10px;
+        }
+
+        #chatbot-window {
+            height: 200px;
+            overflow-y: auto;
+            border: 1px solid #4B3B73;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #2D2E32;
+            border-radius: 5px;
+            color: #F3E8FF;
+        }
+
+        #chat-input {
+            width: 70%;
+            padding: 8px;
+            font-size: 14px;
+            background-color: #2D2E32;
+            color: #F3E8FF;
+            border: 1px solid #4B3B73;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 8px;
+            font-size: 14px;
+            background-color: #4B3B73;
+            color: #F3E8FF;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #6B4D9D;
+        }
+
+        /* Slider Styling */
+        .slider {
+            position: relative;
+            margin: 20px auto;
+            max-width: 800px;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .slides {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .slides img {
+            width: 100%;
+            min-width: 100%; /* Ensure each slide occupies full container width */
+            border-radius: 8px;
+        }
+
+        .navigation {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+        }
+
+        .navigation button {
+            background-color: rgba(0, 0, 0, 0.5);
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+        }
+
+        .navigation button:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        /* Footer Styling */
+        footer {
+            text-align: center;
+            background-color: #4B3B73;
+            color: #F3E8FF;
+            padding: 10px;
+            margin-top: auto; /* Push footer to the bottom */
+        }
+        nav {
+        background-color: #F3E8FF; /* Optional: Navigation background color */
+        padding: 1rem;
+    }
+
+    nav ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex; /* Ensures items are in a horizontal row */
+        justify-content: center; /* Centers items under the header */
+    }
+
+    nav ul li {
+        margin-left:4rem;
+    }
+
+    nav ul li:first-child {
+        margin-left: 0; /* Remove extra space before the first item */
+    }
+
+    nav ul li a {
+        text-decoration: none;
+        color: #4B3B73;
+        font-weight: bold;
+        background-color: transparent; /* Removes any background */
+    }
+
+    nav ul li a:hover {
+        text-decoration: underline;
+    }
+    nav ul li a:hover {
+        text-decoration: underline;
+    }
+
+/* Centering the Table */
+#staticTable {
+        margin: 0 auto;
+        border-collapse: collapse;
+        width: 60%; /* Adjust width as needed */
+    }
+
+    #staticTable th, #staticTable td {
+        padding: 12px;
+        text-align: center;
+        border: 1px solid #ddd;
+    }
+
+    #staticTable th {
+        background-color: #4B3B73;
+        color: #F3E8FF;
+    }
+
+    #staticTable td {
+        background-color: #393B44;
+        color: #F3E8FF;
+    }
+
+    </style>
+    <!-- Include Chart.js from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Serene AI: Your Mental Health Companion</h1>
+        <p>Discover a supportive and relaxing space where you can talk to our friendly AI chatbot. Together, let's explore ways to improve mental well-being and find peace of mind.</p>
+    </header>
+    <nav>
+        <ul>
+            
+            <li><a href="support.html">Support</a></li>
+            <li><a href="games.html">Games</a></li>
+            <li><a href="blog.html">Blog</a></li>
+            
+            
+            
+        </ul>
+    </nav>
+
+    <!-- Quote Slider Section -->
+    <div class="slider">
+        <div class="slides" id="quote-slides">
+            <img src="quote1.png" alt="Quote 1">
+            <img src="quote2.png" alt="Quote 2">
+            <img src="quote3.png" alt="Quote 3">
+            <img src="quote4.png" alt="Quote 4">
+            <img src="quote5.png" alt="Quote 5">
+        </div>
+        <div class="navigation">
+            <button id="prev">&#10094;</button>
+            <button id="next">&#10095;</button>
+        </div>
+    </div>
+
+    <section id="stats">
+        <h2>Mental Health Statistics Among Students in Malaysia</h2>
+        <p>
+            Recent data indicates a significant rise in mental health issues among students in Malaysia. 
+            According to the National Health Morbidity Survey (NHMS), the prevalence of mental health problems in this group increased 
+            from 7.9% (approximately 424,000 individuals) in 2019 to 16.5% (around 922,318 individuals) in 2023. 
+        </p>
+        <p>
+            For more detailed information, visit <a href="https://selangorjournal.my/2024/12/mental-health-cases-among-students-double-in-2023/?utm_source=chatgpt.com#google_vignette" target="_blank">Selangor Journal</a>.
+        </p>
+        <table id="staticTable">
+            <tr>
+                <th>Category</th>
+                <th>Percentage</th>
+            </tr>
+            <tr>
+                <td>Students reporting anxiety</td>
+                <td>16.5%</td>
+            </tr>
+            <tr>
+                <td>Students with depression</td>
+                <td>12.3%</td>
+            </tr>
+            <tr>
+                <td>Students with suicidal thoughts</td>
+                <td>13.1%</td>
+            </tr>
+        </table>
+    
+        <!-- Chart.js Chart -->
+        <canvas id="mentalHealthChart" width="400" height="200"></canvas>
+    </section>
+    
+    
+
+    <!-- Chatbot Icon -->
+    <div id="chatbot-icon" onclick="toggleChatbot()">
+        What’s in your mind today?
+    </div>
+
+    <!-- Chatbot Window -->
+    <div id="chatbot">
+        <div id="chatbot-window"></div>
+        <input type="text" id="chat-input" placeholder="Ask me anything...">
+        <button onclick="sendMessage()">Send</button>
+        <button onclick="resetChat()">Reset Chat</button>
+    </div>
+
+    <script>
+        // JavaScript for toggling the chatbot window
+        function toggleChatbot() {
+            const chatbot = document.getElementById("chatbot");
+            chatbot.style.display = chatbot.style.display === "none" ? "block" : "none";
+        }
+
+        // JavaScript for Chatbot interaction with Python backend
+        async function sendMessage() {
+            const userInput = document.getElementById("chat-input").value;
+            const chatWindow = document.getElementById("chatbot-window");
+
+            if (userInput.trim() === "") return;
+
+            // Display user message
+            chatWindow.innerHTML += `<div><strong>You:</strong> ${userInput}</div>`;
+            document.getElementById("chat-input").value = ""; // Clear input field
+
+            // Send user input to Python backend
+            try {
+                const response = await fetch('http://127.0.0.1:5000/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: userInput })
+                });
+
+                const data = await response.json();
+                const botResponse = data.response;
+
+                // Display bot response
+                chatWindow.innerHTML += `<div><strong>Bot:</strong> ${botResponse}</div>`;
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            } catch (error) {
+                console.error('Error communicating with the backend:', error);
+                chatWindow.innerHTML += `<div><strong>Bot:</strong> There was an error. Please try again later.</div>`;
+            }
+        }
+
+        // JavaScript for resetting the chat
+        function resetChat() {
+            const chatWindow = document.getElementById("chatbot-window");
+            chatWindow.innerHTML = ""; // Clear chat history
+        }
+
+        // JavaScript for Chart.js
+        document.addEventListener("DOMContentLoaded", function () {
+            const ctx = document.getElementById('mentalHealthChart').getContext('2d');
+            const data = {
+                labels: [
+                    'Students reporting anxiety (16.5%)', 
+                    'Students with depression (12.3%)', 
+                    'Students with suicidal thoughts (13.1%)'
+                ],
+                datasets: [{
+                    label: 'Percentage',
+                    data: [16.5, 12.3, 13.1],
+                    backgroundColor: [
+                        'rgba(121, 134, 203, 0.5)',  // Blue for Anxiety
+                        'rgba(183, 83, 102, 0.5)',   // Red for Depression
+                        'rgba(183, 121, 158, 0.5)'   // Purple for Suicidal Thoughts
+                    ],
+                    borderColor: [
+                        'rgba(121, 134, 203, 1)',    // Blue border for Anxiety
+                        'rgba(183, 83, 102, 1)',     // Red border for Depression
+                        'rgba(183, 121, 158, 1)'     // Purple border for Suicidal Thoughts
+                    ],
+                    borderWidth: 1
+                }]
+            };
+
+            const config = {
+                type: 'bar',
+                data: data,
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            color: '#F3E8FF'
+                        },
+                        x: {
+                            color: '#F3E8FF'
+                        }
+                    }
+                }
+            };
+
+            new Chart(ctx, config);
+        });
+
+        // JavaScript for Slider
+        const slides = document.getElementById('quote-slides');
+        let index = 0;
+
+        document.getElementById('prev').addEventListener('click', () => {
+            index = (index > 0) ? index - 1 : slides.childElementCount - 1;
+            slides.style.transform = `translateX(-${index * 100}%)`;
+        });
+
+        document.getElementById('next').addEventListener('click', () => {
+            index = (index < slides.childElementCount - 1) ? index + 1 : 0;
+            slides.style.transform = `translateX(-${index * 100}%)`;
+        });
+    </script>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Serene Chat AI Buddy. All rights reserved.</p>
+    </footer>
+</body>
+</html>
+
+
+
+
